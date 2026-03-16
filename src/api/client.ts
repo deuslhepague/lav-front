@@ -1,4 +1,4 @@
-export const API_BASE = import.meta.env.VITE_API_URL ?? 'https://SEU-TUNNEL.trycloudflare.com'
+export const API_BASE = import.meta.env.VITE_API_URL
 
 export function getInitData(): string {
   return window.Telegram?.WebApp?.initData ?? ''
