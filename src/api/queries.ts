@@ -1,34 +1,33 @@
-import { apiFetch } from './client'
-import type { Perfil, ColecaoPage, CatColecao, Categoria, Roupa } from '../types'
+import { apiFetch, API_BASE } from './client'
+import type { Perfil, ColecaoPage, Colecao, Ordem } from '../types'
 
-export const getPerfil = (uid: number) =>
-  apiFetch<Perfil>(`/api/perfil/${uid}`)
+export const queries = {
+  perfil: (uid: number) =>
+    apiFetch<Perfil>(`/api/perfil/${uid}`),
 
-export const getCategorias = () =>
-  apiFetch<Categoria[]>(`/api/categorias`)
+  categorias: () =>
+    fetch(`${API_BASE}/api/categorias`).then(r => r.json()),
 
-export interface ColecaoParams {
-  uid: number
-  pagina?: number
-  categoria?: string
-  raridade?: string
-  busca?: string
-  ordem?: string
+  colecao: (uid: number, params: {
+    pagina?: number
+    ordem?: Ordem
+    categoria?: string
+    raridade?: string
+    busca?: string
+  }) => {
+    const p = new URLSearchParams()
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== '') p.set(k, String(v))
+    })
+    return apiFetch<ColecaoPage>(`/api/colecao/${uid}?${p}`)
+  },
+
+  colecoes: (uid: number) =>
+    apiFetch<Colecao[]>(`/api/colecoes/${uid}`),
+
+  listaTroca: (uid: number) =>
+    apiFetch<{ texto: string }>(`/api/lista_troca/${uid}`),
+
+  toggleNaoTroco: (uid: number, roupaId: number) =>
+    apiFetch<{ nao_troco: boolean }>(`/api/nao_troco/${uid}/${roupaId}`, { method: 'POST' }),
 }
-
-export const getColecao = ({ uid, pagina = 1, categoria, raridade, busca, ordem = 'recente' }: ColecaoParams) => {
-  const p = new URLSearchParams({ pagina: String(pagina), ordem })
-  if (categoria) p.set('categoria', categoria)
-  if (raridade)  p.set('raridade', raridade)
-  if (busca)     p.set('busca', busca)
-  return apiFetch<ColecaoPage>(`/api/colecao/${uid}?${p}`)
-}
-
-export const getColecoes = (uid: number) =>
-  apiFetch<CatColecao[]>(`/api/colecoes/${uid}`)
-
-export const getListaTroca = (uid: number) =>
-  apiFetch<{ texto: string }>(`/api/lista_troca/${uid}`)
-
-export const toggleNaoTroco = (uid: number, roupaId: number) =>
-  apiFetch<{ nao_troco: boolean }>(`/api/nao_troco/${uid}/${roupaId}`, { method: 'POST' })

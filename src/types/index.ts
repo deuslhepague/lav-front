@@ -28,7 +28,7 @@ export interface ColecaoPage {
   por_pagina: number
 }
 
-export interface Subcollection {
+export interface SubcollectionItem {
   id: number
   nome: string
   banner_fid: string | null
@@ -40,8 +40,11 @@ export interface Subcollection {
 export interface Colecao {
   nome: string
   emoji: string
-  subcategorias: Subcollection[]
+  subcategorias: SubcollectionItem[]
 }
+
+// Alias para compatibilidade
+export type CatColecao = Colecao
 
 export interface Perfil {
   id: number
@@ -59,3 +62,5 @@ export interface Categoria {
   nome: string
   emoji: string
 }
+
+export type Ordem = 'recente' | 'nome' | 'raridade'
