@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Roupa, Categoria } from '../types'
 import { api } from '../lib/api'
+import { imgUrl } from '../lib/api'
 import { useTelegram } from '../hooks/useTelegram'
 import RoupaItem from './RoupaItem'
 import RoupaModal from './RoupaModal'
@@ -31,7 +32,7 @@ export default function RoupasTab({ userId, showToast }: Props) {
   const [rar, setRar] = useState('')
   const [busca, setBusca] = useState('')
   const [buscaInput, setBuscaInput] = useState('')
-  const [ordem, setOrdem] = useState('recente')
+  const [ordem, setOrdem] = useState<import('../types').Ordem>('recente')
   const [modalRoupa, setModalRoupa] = useState<Roupa | null>(null)
 
   // Load categories once
@@ -122,7 +123,7 @@ export default function RoupasTab({ userId, showToast }: Props) {
           </div>
           <select
             value={ordem}
-            onChange={e => setOrdem(e.target.value)}
+            onChange={e => setOrdem(e.target.value as import('../types').Ordem)}
             className="flex-shrink-0 bg-s0 border border-border text-sub text-xs
                        rounded-lg px-2 py-1.5 outline-none cursor-pointer"
           >
