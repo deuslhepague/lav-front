@@ -17,9 +17,10 @@ const RARIDADES = [
 interface Props {
   userId: number
   showToast: (msg: string) => void
+  isOwner?: boolean
 }
 
-export default function RoupasTab({ userId, showToast }: Props) {
+export default function RoupasTab({ userId, showToast, isOwner = true }: Props) {
   const { haptic } = useTelegram()
   const [roupas, setRoupas] = useState<Roupa[]>([])
   const [total, setTotal] = useState(0)
@@ -204,6 +205,7 @@ export default function RoupasTab({ userId, showToast }: Props) {
         onClose={() => setModalRoupa(null)}
         onToggleNaoTroco={handleToggleNaoTroco}
         showToast={showToast}
+        isOwner={isOwner}
       />
     </div>
   )
