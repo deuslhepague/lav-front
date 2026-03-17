@@ -16,9 +16,10 @@ interface Props {
   onClose: () => void
   onToggleNaoTroco: (id: number, val: boolean) => void
   showToast: (msg: string) => void
+  isOwner?: boolean
 }
 
-export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast }: Props) {
+export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast, isOwner = true }: Props) {
   const { userId, haptic } = useTelegram()
   const [loading, setLoading] = useState(false)
   const open = roupa !== null
@@ -98,7 +99,7 @@ export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast
               </div>
             )}
 
-            <button
+            {isOwner && <button
               onClick={toggleNT}
               disabled={loading}
               className={`w-full py-3.5 rounded-ios font-semibold text-sm
@@ -115,7 +116,7 @@ export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast
                   : <><span>🚫</span> Marcar como "Não troco"</>
               }
             </button>
-            <p className="text-center text-muted text-xs mt-4">ID: {roupa.id}</p>
+            }<p className="text-center text-muted text-xs mt-4">ID: {roupa.id}</p>
           </div>
         )}
       </div>
