@@ -1,3 +1,4 @@
+import TgImage from './TgImage'
 import { useEffect, useState } from 'react'
 import { Colecao } from '../types'
 import { api } from '../lib/api'
