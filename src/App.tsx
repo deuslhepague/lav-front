@@ -18,7 +18,7 @@ export default function App() {
   // 2. usuário logado no Telegram
   const startApp = tg?.initDataUnsafe?.start_param
   const targetUserId: number | null = startApp
-    ? parseInt(startApp)
+    ? (parseInt(startApp as string) || null)
     : myUserId
 
   const isOwnProfile = targetUserId === myUserId
@@ -127,7 +127,7 @@ export default function App() {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {tab === 'roupas'
-          ? <RoupasTab userId={targetUserId} showToast={showToast} isOwner={isOwnProfile} />
+          ? <RoupasTab userId={targetUserId} showToast={showToast} />
           : <ColecoesTab userId={targetUserId} />}
       </div>
 
