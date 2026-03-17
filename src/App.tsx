@@ -127,7 +127,7 @@ export default function App() {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {tab === 'roupas'
-          ? <RoupasTab userId={targetUserId} showToast={showToast} />
+          ? <RoupasTab userId={targetUserId} showToast={showToast} isOwner={isOwnProfile} />
           : <ColecoesTab userId={targetUserId} />}
       </div>
 
