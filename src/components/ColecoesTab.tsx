@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Colecao } from '../types'
-import { api, imgUrl } from '../lib/api'
+import { api } from '../lib/api'
 
 interface Props { userId: number }
 
@@ -53,7 +53,6 @@ export default function ColecoesTab({ userId }: Props) {
 }
 
 function SubCard({ sub, catEmoji }: { sub: Colecao['subcategorias'][0]; catEmoji: string }) {
-  const [bannerLoaded, setBannerLoaded] = useState(false)
   const pct = sub.pct ?? 0
   const completo = pct >= 100
 
@@ -62,18 +61,12 @@ function SubCard({ sub, catEmoji }: { sub: Colecao['subcategorias'][0]; catEmoji
       {/* Banner */}
       <div className="relative w-full aspect-video bg-s1 overflow-hidden">
         {sub.banner_fid ? (
-          <>
-            {!bannerLoaded && (
-              <div className="absolute inset-0 shimmer" />
-            )}
-            <img
-              src={imgUrl(sub.banner_fid)}
-              alt={sub.nome}
-              loading="lazy"
-              onLoad={() => setBannerLoaded(true)}
-              className={`w-full h-full object-cover transition-opacity duration-300 ${bannerLoaded ? 'opacity-100' : 'opacity-0'}`}
-            />
-          </>
+          <TgImage
+            fileId={sub.banner_fid}
+            alt={sub.nome}
+            placeholder={catEmoji}
+            className="absolute inset-0 w-full h-full"
+          />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-3xl">
             {catEmoji}
