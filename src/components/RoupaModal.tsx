@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Roupa } from '../types'
-import { imgUrl, api } from '../lib/api'
+import TgImage from './TgImage'
+import { api } from '../lib/api'
 import { useTelegram } from '../hooks/useTelegram'
 
 const RAR_STYLES: Record<string, string> = {
@@ -20,13 +21,8 @@ interface Props {
 export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast }: Props) {
   const { userId, haptic } = useTelegram()
   const [loading, setLoading] = useState(false)
-  const [imgLoaded, setImgLoaded] = useState(false)
   const open = roupa !== null
 
-  // Reset img state when roupa changes
-  useEffect(() => { setImgLoaded(false) }, [roupa?.id])
-
-  // Close on backdrop click
   function handleBackdrop(e: React.MouseEvent) {
     if (e.target === e.currentTarget) onClose()
   }
@@ -46,7 +42,7 @@ export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast
     }
   }
 
-  const rarKey = roupa?.raridade?.toLowerCase() ?? 'comum'
+  const rarKey = (roupa?.raridade ?? '').toLowerCase()
   const rarStyle = RAR_STYLES[rarKey] ?? RAR_STYLES.comum
 
   return (
@@ -57,76 +53,57 @@ export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast
     >
       <div className={`w-full bg-s0 rounded-t-[28px] pb-8 max-h-[88vh] overflow-y-auto
                        ${open ? 'slide-up' : ''}`}>
-        {/* Handle */}
         <div className="flex justify-center pt-3 pb-4">
           <div className="w-10 h-1 bg-s2 rounded-full" />
         </div>
 
         {roupa && (
           <div className="px-5">
-            {/* Top section */}
             <div className="flex gap-4 mb-5">
-              <div className="w-[100px] flex-shrink-0 rounded-ios overflow-hidden
-                              aspect-[2/3] bg-s1 relative">
-                {!imgLoaded && (
-                  <div className="absolute inset-0 flex items-center justify-center text-3xl">
-                    {roupa.evento_emoji ?? roupa.categoria_emoji ?? '👗'}
-                  </div>
-                )}
-                <img
-                  src={imgUrl(roupa.file_id)}
-                  alt={roupa.nome}
-                  onLoad={() => setImgLoaded(true)}
-                  className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded?'opacity-100':'opacity-0'}`}
-                />
-              </div>
+              <TgImage
+                fileId={roupa.file_id}
+                alt={roupa.nome}
+                placeholder={roupa.evento_emoji ?? roupa.categoria_emoji ?? '👗'}
+                className="w-[100px] flex-shrink-0 rounded-ios aspect-[2/3] bg-s1"
+              />
 
               <div className="flex-1 min-w-0 pt-1">
                 <h2 className="text-white font-bold text-[20px] leading-tight mb-1">{roupa.nome}</h2>
                 <p className="text-sub text-sm mb-3 leading-relaxed">
                   {roupa.subcategorias.map(s => s.nome).join(' · ')}
                 </p>
-
-                {/* Rarity pill */}
                 <span className={`inline-flex items-center gap-1.5 text-xs font-semibold
                                   px-2.5 py-1 rounded-full border ${rarStyle}`}>
                   {roupa.raridade_emoji} {roupa.raridade}
                 </span>
-
-                {/* Evento badge */}
                 {roupa.evento_nome && (
                   <div className="mt-2 inline-flex items-center gap-1.5 text-xs text-acc
                                   bg-accSoft px-2.5 py-1 rounded-full border border-acc/30">
                     {roupa.evento_emoji} {roupa.evento_nome}
                   </div>
                 )}
-
                 <p className="text-sub text-sm mt-3">
                   Você tem <span className="text-white font-semibold">{roupa.quantidade}×</span>
                 </p>
               </div>
             </div>
 
-            {/* Tags */}
             {roupa.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-5">
                 {roupa.tags.map(tag => (
-                  <span key={tag}
-                    className="text-xs text-acc bg-accSoft border border-acc/20 px-2.5 py-1 rounded-full">
+                  <span key={tag} className="text-xs text-acc bg-accSoft border border-acc/20 px-2.5 py-1 rounded-full">
                     {tag}
                   </span>
                 ))}
               </div>
             )}
 
-            {/* Não troco button */}
             <button
               onClick={toggleNT}
               disabled={loading}
               className={`w-full py-3.5 rounded-ios font-semibold text-sm
-                          flex items-center justify-center gap-2
-                          transition-all duration-200 active:scale-[0.98]
-                          ${roupa.nao_troco
+                          flex items-center justify-center gap-2 transition-all duration-200
+                          active:scale-[0.98] ${roupa.nao_troco
                             ? 'bg-redSoft text-red border border-red/30'
                             : 'bg-s1 text-white border border-border'
                           } ${loading ? 'opacity-50' : ''}`}
@@ -138,8 +115,6 @@ export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast
                   : <><span>🚫</span> Marcar como "Não troco"</>
               }
             </button>
-
-            {/* ID info */}
             <p className="text-center text-muted text-xs mt-4">ID: {roupa.id}</p>
           </div>
         )}
