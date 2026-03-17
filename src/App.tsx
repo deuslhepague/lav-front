@@ -8,10 +8,20 @@ import Toast from './components/Toast'
 type Tab = 'roupas' | 'colecoes'
 
 export default function App() {
-  const { userId, firstName, tg } = useTelegram()
+  const { userId: myUserId, firstName: myFirstName, tg } = useTelegram()
   const [tab, setTab] = useState<Tab>('roupas')
   const [perfil, setPerfil] = useState<any>(null)
   const [toast, setToast] = useState('')
+
+  // Descobrir qual usuário exibir:
+  // 1. startapp parameter do link (t.me/bot/app?startapp=USER_ID)
+  // 2. usuário logado no Telegram
+  const startApp = tg?.initDataUnsafe?.start_param
+  const targetUserId: number | null = startApp
+    ? parseInt(startApp)
+    : myUserId
+
+  const isOwnProfile = targetUserId === myUserId
 
   function showToast(msg: string) {
     setToast(msg)
@@ -19,9 +29,9 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (!userId) return
-    api.perfil(userId).then(setPerfil).catch(() => {})
-  }, [userId])
+    if (!targetUserId) return
+    api.perfil(targetUserId).then(setPerfil).catch(() => {})
+  }, [targetUserId])
 
   useEffect(() => {
     if (!tg) return
@@ -30,14 +40,18 @@ export default function App() {
     return () => tg.BackButton.hide()
   }, [tg])
 
-  const nome = firstName ?? perfil?.username ?? '–'
+  // Nome a exibir: perfil do banco ou nome do Telegram
+  const nome = isOwnProfile
+    ? (myFirstName ?? perfil?.username ?? '–')
+    : (perfil?.username ?? `User ${targetUserId}`)
+
   const cartas = perfil?.cartas ?? 0
   const moedas = perfil?.moedas ?? 0
 
   async function copiarLista() {
-    if (!userId) return
+    if (!targetUserId) return
     try {
-      const d = await api.listaTroca(userId)
+      const d = await api.listaTroca(targetUserId)
       await navigator.clipboard.writeText(d.texto)
       showToast('✅ Lista copiada!')
       tg?.HapticFeedback?.notificationOccurred('success')
@@ -46,7 +60,7 @@ export default function App() {
     }
   }
 
-  if (!userId) {
+  if (!targetUserId) {
     return (
       <div className="h-screen bg-bg flex items-center justify-center text-center px-8">
         <div>
@@ -67,25 +81,33 @@ export default function App() {
           {nome[0]?.toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-white font-semibold text-sm truncate">{nome}</p>
+          <p className="text-white font-semibold text-sm truncate">
+            {nome}
+            {!isOwnProfile && (
+              <span className="ml-2 text-xs text-acc font-normal">coleção alheia</span>
+            )}
+          </p>
           <p className="text-sub text-xs mt-0.5">
             {cartas.toLocaleString('pt-BR')} roupas · {moedas.toLocaleString('pt-BR')} moedas
           </p>
         </div>
-        <button
-          onClick={copiarLista}
-          className="flex-shrink-0 flex items-center gap-1.5 bg-accSoft text-acc
-                     text-xs font-semibold px-3 py-2 rounded-full active:opacity-60 transition-opacity"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
-            <rect x="9" y="9" width="13" height="13" rx="2"/>
-            <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-          </svg>
-          Lista troca
-        </button>
+        {/* Botão copiar só aparece na própria coleção */}
+        {isOwnProfile && (
+          <button
+            onClick={copiarLista}
+            className="flex-shrink-0 flex items-center gap-1.5 bg-accSoft text-acc
+                       text-xs font-semibold px-3 py-2 rounded-full active:opacity-60 transition-opacity"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+            Lista troca
+          </button>
+        )}
       </header>
 
-      {/* Segmented control (iOS style) */}
+      {/* Segmented control */}
       <div className="flex-shrink-0 bg-s0 px-4 pb-3">
         <div className="bg-s1 rounded-xl p-1 flex gap-1">
           {([['roupas','🧺 Roupas'],['colecoes','📚 Coleções']] as [Tab,string][]).map(([t,label]) => (
@@ -93,9 +115,7 @@ export default function App() {
               key={t}
               onClick={() => setTab(t)}
               className={`flex-1 py-1.5 rounded-[10px] text-sm font-medium transition-all duration-200 ${
-                tab === t
-                  ? 'bg-s2 text-white shadow-sm'
-                  : 'text-sub'
+                tab === t ? 'bg-s2 text-white shadow-sm' : 'text-sub'
               }`}
             >
               {label}
@@ -107,8 +127,8 @@ export default function App() {
       {/* Content */}
       <div className="flex-1 overflow-hidden">
         {tab === 'roupas'
-          ? <RoupasTab userId={userId} showToast={showToast} />
-          : <ColecoesTab userId={userId} />}
+          ? <RoupasTab userId={targetUserId} showToast={showToast} isOwner={isOwnProfile} />
+          : <ColecoesTab userId={targetUserId} />}
       </div>
 
       <Toast message={toast} />
