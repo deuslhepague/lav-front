@@ -1,6 +1,5 @@
 import { Roupa } from '../types'
-import { imgUrl } from '../lib/api'
-import { useState } from 'react'
+import TgImage from './TgImage'
 
 const RAR_COLOR: Record<string, string> = {
   diamante: 'text-dia',
@@ -16,8 +15,7 @@ interface Props {
 }
 
 export default function RoupaItem({ roupa, onClick, delay = 0 }: Props) {
-  const [imgLoaded, setImgLoaded] = useState(false)
-  const rarKey = roupa.raridade?.toLowerCase() ?? 'comum'
+  const rarKey = (roupa.raridade ?? '').toLowerCase()
   const sub = roupa.subcategorias[0]?.nome ?? ''
 
   return (
@@ -27,23 +25,13 @@ export default function RoupaItem({ roupa, onClick, delay = 0 }: Props) {
                  border-b border-border last:border-0 text-left fade-in"
       style={{ animationDelay: `${delay}ms` }}
     >
-      {/* Thumbnail */}
-      <div className="w-12 h-12 rounded-xl flex-shrink-0 bg-s1 overflow-hidden relative">
-        {!imgLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center text-2xl">
-            {roupa.evento_emoji ?? roupa.categoria_emoji ?? '👗'}
-          </div>
-        )}
-        <img
-          src={imgUrl(roupa.file_id)}
-          alt={roupa.nome}
-          loading="lazy"
-          onLoad={() => setImgLoaded(true)}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-        />
-      </div>
+      <TgImage
+        fileId={roupa.file_id}
+        alt={roupa.nome}
+        placeholder={roupa.evento_emoji ?? roupa.categoria_emoji ?? '👗'}
+        className="w-12 h-12 rounded-xl flex-shrink-0 bg-s1"
+      />
 
-      {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 mb-0.5">
           <span className="text-white font-medium text-[14px] truncate">{roupa.nome}</span>
@@ -56,13 +44,12 @@ export default function RoupaItem({ roupa, onClick, delay = 0 }: Props) {
         </div>
         <p className="text-sub text-xs truncate">{sub}</p>
         <p className="text-xs mt-0.5 flex items-center gap-1">
-          <span className={`${RAR_COLOR[rarKey] ?? 'text-sub'}`}>{roupa.raridade_emoji}</span>
+          <span className={RAR_COLOR[rarKey] ?? 'text-sub'}>{roupa.raridade_emoji}</span>
           <span className="text-muted">{roupa.raridade}</span>
           <span className="text-muted/60">· ID: {roupa.id}</span>
         </p>
       </div>
 
-      {/* Right */}
       <div className="flex-shrink-0 flex flex-col items-end gap-1">
         <span className={`text-sm font-medium ${roupa.quantidade > 1 ? 'text-acc' : 'text-sub'}`}>
           {roupa.quantidade > 1 ? `${roupa.quantidade}×` : '×1'}
