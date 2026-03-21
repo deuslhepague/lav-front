@@ -61,9 +61,10 @@ function SubCard({ sub, catEmoji }: { sub: Colecao['subcategorias'][0]; catEmoji
     <div className="bg-s0 rounded-ios-lg overflow-hidden border border-border fade-in">
       {/* Banner */}
       <div className="relative w-full aspect-video bg-s1 overflow-hidden">
-        {sub.banner_fid ? (
+        {(sub.banner_url || sub.banner_fid) ? (
           <TgImage
-            fileId={sub.banner_fid}
+            fileId={sub.banner_fid ?? undefined}
+            imagemUrl={sub.banner_url}
             alt={sub.nome}
             placeholder={catEmoji}
             className="absolute inset-0 w-full h-full"
