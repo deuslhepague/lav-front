@@ -33,6 +33,7 @@ export interface SubcollectionItem {
   id: number
   nome: string
   banner_fid: string | null
+  banner_url: string | null
   qtd_usuario: number
   total_banco: number
   pct: number
