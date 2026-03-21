@@ -27,6 +27,7 @@ export default function RoupaItem({ roupa, onClick, delay = 0 }: Props) {
     >
       <TgImage
         fileId={roupa.file_id}
+        imagemUrl={roupa.imagem_url}
         alt={roupa.nome}
         placeholder={roupa.evento_emoji ?? roupa.categoria_emoji ?? '👗'}
         className="w-12 h-12 rounded-xl flex-shrink-0 bg-s1"

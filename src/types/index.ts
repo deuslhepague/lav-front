@@ -10,6 +10,7 @@ export interface Roupa {
   raridade: string
   raridade_emoji: string
   file_id: string
+  imagem_url: string | null
   quantidade: number
   nao_troco: boolean
   subcategorias: Subcategoria[]
@@ -42,9 +43,6 @@ export interface Colecao {
   emoji: string
   subcategorias: SubcollectionItem[]
 }
-
-// Alias para compatibilidade
-export type CatColecao = Colecao
 
 export interface Perfil {
   id: number
