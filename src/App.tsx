@@ -66,7 +66,7 @@ export default function App() {
         <div>
           <div className="text-5xl mb-4">👗</div>
           <p className="text-white font-semibold text-lg mb-2">Lavanderia</p>
-          <p className="text-sub text-sm">Abre este app pelo Telegram</p>
+          <p className="text-sub text-sm">Abra este app pelo Telegram</p>
         </div>
       </div>
     )
