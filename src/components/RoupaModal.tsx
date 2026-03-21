@@ -63,6 +63,7 @@ export default function RoupaModal({ roupa, onClose, onToggleNaoTroco, showToast
             <div className="flex gap-4 mb-5">
               <TgImage
                 fileId={roupa.file_id}
+                imagemUrl={roupa.imagem_url}
                 alt={roupa.nome}
                 placeholder={roupa.evento_emoji ?? roupa.categoria_emoji ?? '👗'}
                 className="w-[100px] flex-shrink-0 rounded-ios aspect-[2/3] bg-s1"
